@@ -46,4 +46,17 @@ class User extends Authenticatable
     protected $casts = [
         'verified_at' => 'datetime',
     ];
+
+
+    /**
+     * Find user to login into application through email or mobile
+     * @param $username
+     * @return mixed
+     */
+    public function findForPassport($username)
+    {
+        $user = static::where('mobile', $username)->orWhere('email',$username)->first();
+        dd($user);
+        return $user;
+    }
 }
