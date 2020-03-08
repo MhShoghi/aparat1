@@ -32,7 +32,7 @@ Route::post('register', [
     'uses' => 'AuthController@register'
 ]);
 
-Route::any('register-verify/{code}/{field}',[
+Route::post('register-verify',[
     'as' => 'auth.register-verify',
     'uses' => 'AuthController@registerVerify'
 ]);
