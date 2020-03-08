@@ -42,7 +42,7 @@ return [
         ],
 
         'api' => [
-            'driver' => 'token',
+            'driver' => 'passport',
             'provider' => 'users',
             'hash' => false,
         ],
@@ -99,6 +99,12 @@ return [
             'expire' => 60,
             'throttle' => 60,
         ],
+    ],
+
+    'token_expiration' => [
+        'token' => env('EXPIRATION_TOKEN',14400), // 15 day
+        'refresh_token' => env('REFRESH_TOKEN', 43200) // 30 day
+
     ],
 
     /*
