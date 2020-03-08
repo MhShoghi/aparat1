@@ -17,3 +17,22 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+
+Route::group(['namespace' => '\Laravel\Passport\Http\Controllers'],function ($router){
+    $router->post('login', [
+        'as' => 'auth.login',
+        'middleware' => ['throttle'],
+        'uses' => 'AccessTokenController@issueToken'
+    ]);
+});
+
+Route::post('register', [
+    'as' => 'auth.register',
+    'uses' => 'AuthController@register'
+]);
+
+Route::any('register-verify/{code}/{field}',[
+    'as' => 'auth.register-verify',
+    'uses' => 'AuthController@registerVerify'
+]);

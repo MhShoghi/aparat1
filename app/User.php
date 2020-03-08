@@ -56,7 +56,7 @@ class User extends Authenticatable
     public function findForPassport($username)
     {
         $user = static::where('mobile', $username)->orWhere('email',$username)->first();
-        dd($user);
+
         return $user;
     }
 }

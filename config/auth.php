@@ -104,8 +104,9 @@ return [
     'token_expiration' => [
         'token' => env('EXPIRATION_TOKEN',14400), // 15 day
         'refresh_token' => env('REFRESH_TOKEN', 43200) // 30 day
-
     ],
+    // Register cache expired time in minute
+    'register_cache_expiration' => env('EXPIRATION_REGISTER_CACHE',14400),  //24H * 60M
 
     /*
     |--------------------------------------------------------------------------
