@@ -103,10 +103,14 @@ return [
 
     'token_expiration' => [
         'token' => env('EXPIRATION_TOKEN',14400), // 15 day
-        'refresh_token' => env('REFRESH_TOKEN', 43200) // 30 day
+        'refresh_token' => env('EXPIRATION_REFRESH_TOKEN', 43200) // 30 day
     ],
-    // Register cache expired time in minute
-    'register_cache_expiration' => env('EXPIRATION_REGISTER_CACHE',14400),  //24H * 60M
+    // change email verify code cache expired time in minute
+    'change_email_cache_expiration' => env('EXPIRATION_CHANGE_EMAIL_CACHE',1440),  //24H * 60M
+
+    // Time to create new activation code in minute
+    'resend_verification_code_time_diff' => env('RESEND_VERIFICATION_CODE_TIME_DIFF',60) ,
+
 
     /*
     |--------------------------------------------------------------------------
@@ -118,6 +122,7 @@ return [
     | confirmation screen. By default, the timeout lasts for three hours.
     |
     */
+
 
     'password_timeout' => 10800,
 

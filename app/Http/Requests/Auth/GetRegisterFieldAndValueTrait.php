@@ -4,7 +4,7 @@
 namespace App\Http\Requests\Auth;
 
 
-trait getRegisterFieldAndValueTrait
+trait GetRegisterFieldAndValueTrait
 {
 
     public function getFieldName(){

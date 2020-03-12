@@ -14,9 +14,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
 
 
 Route::group(['namespace' => '\Laravel\Passport\Http\Controllers'],function ($router){
@@ -36,3 +33,25 @@ Route::post('register-verify',[
     'as' => 'auth.register-verify',
     'uses' => 'AuthController@registerVerify'
 ]);
+
+
+Route::post('resend-verification-code', [
+    'as' => 'auth.register.resendVerificationCode',
+    'uses' => 'AuthController@resendVerificationCode'
+]);
+
+Route::post('change-email', ['middleware' => ['auth:api'],
+    'as' => 'change-email',
+    'uses' => 'UserController@changeEmail'
+
+]);
+
+Route::post('change-email-submit', [
+    'middleware' => ['auth:api'],
+    'as' => 'change.email.submit',
+    'uses' => 'UserController@changeEmailSubmit'
+]);
+
+Route::middleware('auth:api')->get('/user', function (Request $request) {
+    return $request->user();
+});
