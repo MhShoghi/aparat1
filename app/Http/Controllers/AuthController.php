@@ -22,10 +22,11 @@ class AuthController extends Controller
      */
     public function register(RegisterNewRequest $request)
     {
-       $field = $request->has('email') ? 'email' : 'mobile';
-       $value = $request->get($field);
 
+        $field = $request->getFieldName();
+        $value = $request->getFieldValue();
 
+        
         // If user has registered before , we stop register route
         if($user = User::where($field,$value)->first()){
 

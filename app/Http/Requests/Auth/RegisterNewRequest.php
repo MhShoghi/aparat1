@@ -7,6 +7,7 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class RegisterNewRequest extends FormRequest
 {
+    use getRegisterFieldAndValueTrait;
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -30,4 +31,7 @@ class RegisterNewRequest extends FormRequest
             'email' => 'required_without:mobile|email'
         ];
     }
+
+
+
 }
