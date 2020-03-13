@@ -16,42 +16,59 @@ use Illuminate\Support\Facades\Route;
 
 
 
-Route::group(['namespace' => '\Laravel\Passport\Http\Controllers'],function ($router){
-    $router->post('login', [
-        'as' => 'auth.login',
-        'middleware' => ['throttle'],
-        'uses' => 'AccessTokenController@issueToken'
+
+
+/** Auth routes */
+Route::group([],function($router){
+    Route::group(['namespace' => '\Laravel\Passport\Http\Controllers'],function ($router){
+        $router->post('login', [
+            'as' => 'auth.login',
+            'middleware' => ['throttle'],
+            'uses' => 'AccessTokenController@issueToken'
+        ]);
+    });
+
+    $router->post('register', [
+        'as' => 'auth.register',
+        'uses' => 'AuthController@register'
+    ]);
+
+    $router->post('register-verify',[
+        'as' => 'auth.register-verify',
+        'uses' => 'AuthController@registerVerify'
+    ]);
+
+    $router->post('resend-verification-code', [
+        'as' => 'auth.register.resendVerificationCode',
+        'uses' => 'AuthController@resendVerificationCode'
     ]);
 });
 
-Route::post('register', [
-    'as' => 'auth.register',
-    'uses' => 'AuthController@register'
-]);
+/** User routes */
+Route::group(['middleware' => ['auth:api']],function($router){
 
-Route::post('register-verify',[
-    'as' => 'auth.register-verify',
-    'uses' => 'AuthController@registerVerify'
-]);
+    $router->post('change-email', [
+        'as' => 'change-email',
+        'uses' => 'UserController@changeEmail'
+    ]);
 
-
-Route::post('resend-verification-code', [
-    'as' => 'auth.register.resendVerificationCode',
-    'uses' => 'AuthController@resendVerificationCode'
-]);
-
-Route::post('change-email', ['middleware' => ['auth:api'],
-    'as' => 'change-email',
-    'uses' => 'UserController@changeEmail'
-
-]);
-
-Route::post('change-email-submit', [
-    'middleware' => ['auth:api'],
-    'as' => 'change.email.submit',
-    'uses' => 'UserController@changeEmailSubmit'
-]);
-
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
+    $router->post('change-email-submit', [
+        'as' => 'change.email.submit',
+        'uses' => 'UserController@changeEmailSubmit'
+    ]);
 });
+
+/** Channel routes */
+
+Route::group(['middleware' => ['auth:api'],'prefix'=>'/channel'],function ($router){
+    $router->put('/{id?}',[
+        'as' => 'channel.update',
+        'uses' => 'ChannelController@update'
+    ]);
+});
+
+
+
+//Route::middleware('auth:api')->get('/user', function (Request $request) {
+//    return $request->user();
+//});
