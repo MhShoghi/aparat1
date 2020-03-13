@@ -25,8 +25,8 @@ class UpdateChannelRequest extends FormRequest
     {
         return [
             "name" => "required|string:255",
-            "website" => "url|max:255",
-            "info" => ""
+            "website" => "nullable|url|max:255",
+            "info" => "nullable|string"
         ];
     }
 }
