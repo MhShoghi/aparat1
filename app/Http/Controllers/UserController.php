@@ -11,7 +11,8 @@ use Illuminate\Support\Facades\Log;
 class UserController extends Controller
 {
     const CHANGE_EMAIL_CACHE_KEY = 'change.email.for.user.';
-    public function  changeEmail(ChangeEmailRequest $request){
+
+    public function changeEmail(ChangeEmailRequest $request){
         try {
 
             $email = $request->email;

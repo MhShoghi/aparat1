@@ -2,16 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Exceptions\RegisterVerificationException;
-use App\Exceptions\UserAlreadyRegisteredException;
 use App\Http\Requests\Auth\RegisterNewRequest;
 use App\Http\Requests\Auth\RegisterVerifyUserRequest;
 use App\Http\Requests\Auth\ResendVerificationCodeRequest;
-use App\User;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Log;
+use App\Services\UserService;
 
 class AuthController extends Controller
 {
@@ -19,37 +13,11 @@ class AuthController extends Controller
      * Register User
      * @param RegisterNewRequest $request
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
-     * @throws UserAlreadyRegisteredException
+
      */
     public function register(RegisterNewRequest $request)
     {
-
-        $field = $request->getFieldName();
-        $value = $request->getFieldValue();
-
-
-        // If user has registered before , we stop register route
-        if($user = User::where($field,$value)->first()){
-
-            //if user has registered before , we should throw exception
-            if($user->verified_at){
-                throw new UserAlreadyRegisteredException('Shoma ghablan sabte nam kardid !');
-            }
-            return response(['message' => 'Code faalsazi ghablan baraye shoma ersal shode ast'],200);
-        }
-
-
-        $code = random_verification_code();
-        $user = User::create([
-               $field => $value,
-               'verify_code' => $code,
-           ]);
-
-
-
-       // TODO: Send email or sms (verification) to user
-        Log::info('SEND-REGISTER-CODE-MESSAGE-TO-USER',['code' => $code]);
-        return response(['message' => 'Temporary user added!'],200);
+        return UserService::registerNewUser($request);
     }
 
     /**
@@ -59,56 +27,15 @@ class AuthController extends Controller
      */
     public function registerVerify(RegisterVerifyUserRequest $request)
     {
-
-        $code = $request->code;
-        $field = $request->has('mobile') ? 'mobile' : 'email' ;
-        $value = $request->get($field);
-
-        $user = User::where([
-            'verify_code' => $code,
-            $field => $value
-        ])->first();
-
-        if(empty($user)){
-            throw new ModelNotFoundException('User not found with entered code');
-        }
-
-        $user->verify_code = null;
-        $user->verified_at = now();
-        $user->save();
-
-        return response($user,200);
+        return UserService::registerVerify($request);
     }
 
-
+    /**
+     * Resend Verification code to user
+     * @param ResendVerificationCodeRequest $request
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     */
     public function resendVerificationCode(ResendVerificationCodeRequest $request){
-
-        $field = $request->getFieldName();
-        $value = $request->getFieldValue();
-
-        $user = User::where($field ,$value)->whereNull('verified_at')->first();
-
-        if(!empty($user)){
-
-            $dataDiff = now()->diffInMinutes($user->updated_at);
-
-
-            if($dataDiff > config('auth.resend_verification_code_time_diff',60)){
-                $user->verify_code = random_verification_code();
-                $user->save();
-            }
-
-            // TODO: Send email or sms (verification) to user
-            Log::info('RESEND-REGISTER-CODE-MESSAGE-TO-USER',['code' => $user->verify_code]);
-
-            return response([
-                'message' => 'Verification code sent!'
-            ], 200);
-        }
-
-        throw new ModelNotFoundException("User not found or before activated!");
-
-
-
+        return UserService::resendVerificationCodeToUser($request);
     }
 }

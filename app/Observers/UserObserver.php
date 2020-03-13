@@ -3,6 +3,7 @@
 namespace App\Observers;
 
 use App\User;
+use Illuminate\Support\Str;
 
 class UserObserver
 {
@@ -14,7 +15,14 @@ class UserObserver
      */
     public function created(User $user)
     {
-        //
+
+        $channelName = !empty($user->email)
+            ? Str::before($user->email,'@')
+            : Str::after($user->mobile, '+98');
+
+        $channel = $user->channel()->create([
+            'name' => $channelName
+        ]);
     }
 
     /**
@@ -25,7 +33,6 @@ class UserObserver
      */
     public function updated(User $user)
     {
-        //
     }
 
     /**
