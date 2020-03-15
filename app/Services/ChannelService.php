@@ -6,10 +6,11 @@ namespace App\Services;
 
 use App\Channel;
 use App\Http\Requests\Channel\UpdateChannelRequest;
-use App\User;
-use Illuminate\Auth\Access\AuthorizationException;
+use App\Http\Requests\Channel\UpdateSocialsRequest;
+use App\Http\Requests\Channel\UploadBannerForChannelRequest;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class ChannelService extends BaseService
 {
@@ -20,11 +21,6 @@ class ChannelService extends BaseService
         try {
 
             if($channelId = $request->route('id')){
-
-                if(auth()->user()->type != User::TYPE_ADMIN){
-                    throw new AuthorizationException('You dont have permission!');
-                }
-
                 $channel = Channel::findOrFail($channelId);
                 $user = $channel->user();
             }else{
@@ -32,7 +28,7 @@ class ChannelService extends BaseService
                 $channel = $user->channel;
             }
             $user = auth()->user();
-            // TODO: Check is admin to update other user channel
+
 
             DB::beginTransaction();
 
@@ -49,14 +45,62 @@ class ChannelService extends BaseService
 
         }catch (\Exception $exception){
             Log::error($exception);
-
             DB::rollBack();
-
-            if($exception instanceof AuthorizationException){
-                throw $exception;
-            }
             return response(['message' => 'Something wrong went!'],500);
 
         }
+    }
+
+    public static function uploadAvatarForChannel(UploadBannerForChannelRequest $request)
+    {
+        try {
+            $banner = $request->file('banner');
+            $fileName = md5(auth()->id());
+            $banner->move(public_path('channel-banners'),$fileName);
+
+
+
+
+            $channel = auth()->user()->channel;
+
+
+            if($channel->banner){
+
+                unlink(public_path($channel->banner));
+            }
+
+            $channel->banner = 'channel-banners/'. $fileName;
+            $channel->save();
+
+
+            return response(['banner' => url('channel-banners/'.$fileName)],200);
+        }catch (\Exception $exception){
+            Log::error($exception);
+
+            return response(['message' => 'Something wrong went!!!'],500);
+        }
+    }
+
+    public static function updateSocials(UpdateSocialsRequest $request)
+    {
+       try{
+           $socials = [
+               "cloob" => $request->input('cloob'),
+               "lenzor" => $request->input('lenzor'),
+               "facebook" => $request->input('facebook'),
+               "telegram" => $request->input('telegram'),
+               "twitter" => $request->input('twitter')
+           ];
+
+           $channel = auth()->user()->channel;
+           $channel->update(['socials' => $socials]);
+
+
+           return response(['message' => 'Successful!'],200);
+       }catch (\Exception $exception){
+           Log::error($exception);
+
+           return response(['message' => 'Something wrong went! (update socials)'],500);
+       }
     }
 }
