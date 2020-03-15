@@ -13,7 +13,7 @@ class UsersTableSeeder extends Seeder
     {
 
         if(\App\User::count()){
-            return;
+            \App\User::truncate();
         }
 
         $this->createAdminUser();

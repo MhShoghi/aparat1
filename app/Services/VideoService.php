@@ -4,7 +4,8 @@
 namespace App\Services;
 
 
-use App\Http\Requests\CreateVideoRequest;
+use App\Http\Requests\Video\CreateVideoRequest;
+use App\Http\Requests\Video\UploadVideoBannerRequest;
 use App\Http\Requests\Video\UploadVideoRequest;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -29,6 +30,23 @@ class VideoService extends BaseService
         }catch (\Exception $exception){
             Log::error($exception);
             return response(['message' => 'Something wrong went!'],500);
+        }
+    }
+
+    public static function uploadBanner(UploadVideoBannerRequest $request)
+    {
+        try {
+
+            $banner = $request->file('banner');
+            $fileName = time() . Str::random(10) . '-banner';
+            $path = public_path('videos/tmp');
+
+            $banner->move($path,$fileName);
+
+            return response(['banner' => $fileName],200);
+        }catch (\Exception $exception){
+            Log::error($exception);
+            return response(['message' => 'Error has occurred!']);
         }
     }
 
