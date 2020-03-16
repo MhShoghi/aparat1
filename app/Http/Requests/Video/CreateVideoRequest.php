@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests\Video;
 
+use App\Rules\CategoryId;
+use App\Rules\OwnPlaylistId;
 use App\Rules\UploadedVideoBannerId;
 use App\Rules\UploadedVideoId;
 use Illuminate\Foundation\Http\FormRequest;
@@ -28,14 +30,14 @@ class CreateVideoRequest extends FormRequest
         return [
             "video_id" => ['required',new UploadedVideoId()],
             "title" => 'required|string|max:255',
-            "category" => 'required|exists:categories,id',
+            "category" => ['required',new CategoryId(CategoryId::PUBLIC_CATEGORIES)],
             "info" => 'nullable|string',
             "tags" => 'nullable|array',
             "tags.*" => 'exists:tags,id',
-            "playlist" => 'nullable|exists:playlist,id', //TODO: select user own playlist
-            "channel_category" => 'nullable|string', //TODO: Channel Category
+            "playlist" => ['nullable',new OwnPlaylistId()], //TODO: select user own playlist
+            "channel_category" => ['nullable',new CategoryId(CategoryId::PRIVATE_CATEGORIES)], //TODO: Channel Category
             "banner" => ['nullable','string',new UploadedVideoBannerId()], //TODO: Banner should be uploaded before create video
-            "publish_at" => 'nullable|date'
+            "publish_at" => 'nullable|date_format:Y-m-d H:i:s|after:now'
         ];
     }
 }

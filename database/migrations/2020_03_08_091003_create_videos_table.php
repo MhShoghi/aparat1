@@ -17,6 +17,7 @@ class CreateVideosTable extends Migration
             $table->bigIncrements('id');
             $table->unsignedBigInteger('user_id')->nullable();
             $table->unsignedBigInteger('category_id');
+            $table->unsignedBigInteger('channel_category_id');
 
             $table->string('slug',50);
             $table->string('title');
@@ -37,6 +38,13 @@ class CreateVideosTable extends Migration
                 ->onUpdate('cascade');
 
             $table->foreign('category_id')
+                ->references('id')
+                ->on('categories')
+                ->onDelete('cascade')
+            ->onUpdate('cascade');
+
+
+            $table->foreign('channel_category_id')
                 ->references('id')
                 ->on('categories')
                 ->onDelete('cascade')

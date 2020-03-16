@@ -8,6 +8,7 @@ use App\Http\Requests\Video\CreateVideoRequest;
 use App\Http\Requests\Video\UploadVideoBannerRequest;
 use App\Http\Requests\Video\UploadVideoRequest;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class VideoService extends BaseService
@@ -52,6 +53,9 @@ class VideoService extends BaseService
 
     public static function create(CreateVideoRequest $request)
     {
+//        Storage::disk('videos')->copy("/tmp/{$request->video_id}",auth()->id() .'/'. $request->video_id);
+
+        dd(Storage::disk('videos'));
         dd($request->validated());
     }
 }
