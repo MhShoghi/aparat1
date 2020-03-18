@@ -65,7 +65,15 @@ class User extends Authenticatable
         $this->attributes['mobile'] = to_valid_mobile_number($value);
     }
 
+
+    //region relations
     public function channel(){
         return $this->hasOne(Channel::class);
     }
+
+    public function category(){
+        return $this->hasMany(Category::class);
+    }
+
+    //endregion relations
 }

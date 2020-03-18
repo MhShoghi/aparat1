@@ -32,7 +32,6 @@ class CreatePlaylistVideosTable extends Migration
                 ->on('videos')
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
-            $table->timestamps();
         });
     }
 

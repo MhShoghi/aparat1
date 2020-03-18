@@ -101,6 +101,42 @@ Route::group(['middleware' => ['auth:api'], 'prefix' => '/video'] ,function ($ro
 });
 
 
+/** Category routes */
+Route::group(['middleware' => ['auth:api'] , 'prefix' => '/category'], function ($router){
+    $router->get('/', [
+        'as' => 'category.all',
+        'uses' => 'CategoryController@index'
+    ]);
+
+    $router->get('/my', [
+        'as' => 'category.my',
+        'uses' => 'CategoryController@myCategory'
+    ]);
+
+    $router->post('/', [
+        'as' => 'category.create',
+        'uses' => 'CategoryController@createCategory'
+    ]);
+
+    $router->post('/upload-banner',[
+        'as' => 'category.banner.upload',
+        'uses' => 'CategoryController@uploadBanner'
+    ]);
+
+});
+
+/** Playlist routes */
+Route::group(['middleware' => ['auth:api'],'prefix' => '/playlist'], function ($router){
+    $router->get('/',[
+       'as' => 'playlist.all',
+        'uses' => 'PlaylistController@getAll'
+    ]);
+
+    $router->get('/my',[
+        'as' => 'playlist.my',
+        'uses' => 'PlaylistController@getMy'
+    ]);
+});
 //Route::middleware('auth:api')->get('/user', function (Request $request) {
 //    return $request->user();
 //});

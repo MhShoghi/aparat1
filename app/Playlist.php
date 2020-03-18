@@ -10,4 +10,10 @@ class Playlist extends Model
 
     protected $fillable = ['user_id' , 'title'];
 
+
+    public function videos()
+    {
+        return $this->belongsToMany(Video::class,'playlist_videos');
+    }
+
 }

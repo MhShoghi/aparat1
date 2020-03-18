@@ -70,6 +70,13 @@ return [
             'root' => public_path('videos')
         ],
 
+        'category' => [
+            'driver' => 'local',
+            'root' => public_path('category')
+        ],
+
+
+
     ],
 
     /*
