@@ -1,12 +1,11 @@
 <?php
 
-namespace App\Http\Requests\Category;
+namespace App\Http\Requests\Tag;
 
 use App\Rules\UniqueForUserRule;
-use App\Rules\UploadedCategoryBannerId;
 use Illuminate\Foundation\Http\FormRequest;
 
-class CreateCategoryRequest extends FormRequest
+class CreateTagRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,9 +25,7 @@ class CreateCategoryRequest extends FormRequest
     public function rules()
     {
         return [
-            "title" => ["required" , "string" , "min:2" , "max:100", new UniqueForUserRule('categories')],
-            "icon" => "nullable|string", //Todo: what package can we use for icon?
-            "banner_id" => ["nullable",new UploadedCategoryBannerId()]
+            "title" => ["required" , "string" , "min:2" , "max:100"]
         ];
     }
 }

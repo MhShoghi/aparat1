@@ -10,6 +10,10 @@ use App\Http\Requests\Video\UploadVideoRequest;
 use App\Playlist;
 use App\Tag;
 use App\Video;
+use FFMpeg\FFMpeg;
+use FFMpeg\Filters\Video\CustomFilter;
+use FFMpeg\Format\Video\WMV;
+use FFMpeg\Format\Video\X264;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -59,10 +63,25 @@ class VideoService extends BaseService
 
     public static function create(CreateVideoRequest $request)
     {
+
         try{
 
             /** @var Media $videoFile */
-            $videoFile = \FFM::fromDisk('videos')->open('tmp/'.$request->video_id);
+            $uploadedVideoPath = 'tmp/'.$request->video_id;
+            $uploadedVideo = \FFM::fromDisk('videos')->open($uploadedVideoPath);
+
+            $filter = new CustomFilter("drawtext=text='http\\://Refahshahrvand.com':fontfile=".env("FFMPEG_FONT_ADDRESS") . ":
+            fontcolor=blue : fontsize=24 : box=1 : boxcolor=white@0.5 : boxborderw=5 :
+            x=10 : y=(h - text_h - 10)");
+
+
+            $format = new X264("libmp3lame");
+            $videoFile = $uploadedVideo->addFilter($filter)
+                ->export()
+                ->toDisk('videos')
+                ->inFormat($format);
+
+
 
             DB::beginTransaction();
 
@@ -75,22 +94,24 @@ class VideoService extends BaseService
                 'channel_category_id' => $request->channel_category,
                 'slug' => '',
                 'info' => $request->info,
-                'duration' => $videoFile->getDurationInSeconds(), //Todo: get video length
+                'duration' => $uploadedVideo->getDurationInSeconds(), //Todo: get video length
                 'banner' => $request->banner,
+                'enable_comments' => $request->enable_comments,
                 'publish_at' => $request->publish_at
             ]);
 
             // Generate unique slug from video id
             $video->slug = uniqueId($video->id);
+
             $video->banner = $video->slug . '-banner';
             $video->save();
 
 
 
             // Save video file and banner
-            Storage::disk('videos')
-                ->move("/tmp/{$request->video_id}",auth()->id() .'/'. $video->slug);
 
+            $videoFile->save(auth()->id() . '/' .$video->slug.'.mp4');
+            Storage::disk('videos')->delete($uploadedVideoPath);
             if($request->banner){
                 Storage::disk('videos')->move ('/tmp/'.$request->banner,auth()->id().'/'.$video->banner);
             }
@@ -108,9 +129,7 @@ class VideoService extends BaseService
             }
 
             DB::commit();
-            return response([
-                'data' => $video
-            ],200);
+            return response($video,200);
         }catch (\Exception $exception){
             Log::error($exception);
 

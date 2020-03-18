@@ -100,7 +100,6 @@ Route::group(['middleware' => ['auth:api'], 'prefix' => '/video'] ,function ($ro
 
 });
 
-
 /** Category routes */
 Route::group(['middleware' => ['auth:api'] , 'prefix' => '/category'], function ($router){
     $router->get('/', [
@@ -136,7 +135,28 @@ Route::group(['middleware' => ['auth:api'],'prefix' => '/playlist'], function ($
         'as' => 'playlist.my',
         'uses' => 'PlaylistController@getMy'
     ]);
+
+    $router->post('/', [
+        'as' => 'playlist.create',
+        'uses' => 'PlaylistController@create'
+    ]);
 });
+
+/** Tag routes */
+Route::group(['middleware' => ['auth:api'], 'prefix' => '/tag'], function ($router){
+    $router->get('/', [
+        'as' => 'tag.all',
+        'uses' => 'TagController@getAll'
+    ]);
+
+    $router->post('/',[
+        'as' => 'tag.create',
+        'uses' => 'TagController@create'
+    ]);
+});
+
+
+
 //Route::middleware('auth:api')->get('/user', function (Request $request) {
 //    return $request->user();
 //});

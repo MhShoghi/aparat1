@@ -6,6 +6,20 @@ use Illuminate\Database\Eloquent\Model;
 
 class Video extends Model
 {
+
+
+    //region state constants
+
+    const STATE_PENDING = 'pending'; // In Queue to process
+    const STATE_CONVERTED = 'converted'; // Complete converted
+    const STATE_ACCEPTED = 'accepted'; // Accepted
+    const STATE_BLOCKED = 'blocked'; // Not allowed
+    const STATES = [self::STATE_PENDING, self::STATE_CONVERTED, self::STATE_ACCEPTED, self::STATE_BLOCKED];
+
+    //endregion state constants
+
+    //region model configs
+
     protected $table = 'videos';
 
     protected $fillable = [
@@ -13,8 +27,9 @@ class Video extends Model
         'channel_category_id' ,
         'slug' , 'title' ,
         'info' , 'duration' ,
-        'banner' , 'publish_at'];
+        'banner', 'enable_comments', 'publish_at'];
 
+    //endregion model configs
 
     // region relations
     public function playlist(){

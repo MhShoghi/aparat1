@@ -8,6 +8,7 @@ use App\Category;
 use App\Http\Requests\Category\CreateCategoryRequest;
 use App\Http\Requests\Category\ListCategoriesRequest;
 use App\Http\Requests\Category\UploadCategoryBannerRequest;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -54,7 +55,25 @@ class CategoryService extends BaseService
 
     public static function createCategory(CreateCategoryRequest $request)
     {
-        $data = $request->validated();
-        $user = auth()->user();
+        try{
+            DB::beginTransaction();
+            $data = $request->validated();
+            $user = auth()->user();
+
+            if($request->banner_id){
+                $bannerPath = auth()->id() . '/' . $request->banner_id;
+                Storage::disk('category')->move('tmp/'.$request->banner_id,$bannerPath);
+            }
+
+            $category = $user->categories()->create($data);
+
+            DB::commit();
+            return response($category,200);
+
+        }catch (\Exception $exception){
+            DB::rollBack();
+            return response(['message' => 'Error has occurred!'],500);
+        }
+
     }
 }

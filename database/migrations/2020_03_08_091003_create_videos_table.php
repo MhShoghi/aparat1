@@ -1,5 +1,6 @@
 <?php
 
+use App\Video;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -22,14 +23,11 @@ class CreateVideosTable extends Migration
             $table->string('slug',50);
             $table->string('title');
             $table->text('info')->nullable();
-
             $table->integer('duration');
-
             $table->string('banner')->nullable();
-
-
+            $table->boolean('enable_comments')->default(true);
             $table->timestamp('publish_at')->nullable();
-
+            $table->enum('state', Video::STATES)->default(Video::STATE_PENDING);
 
             $table->foreign('user_id')
                 ->references('id')

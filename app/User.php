@@ -17,11 +17,14 @@ class User extends Authenticatable
      * @var array
      */
 
+
+    //region types
     const TYPES = [self::TYPE_ADMIN, self::TYPE_USER];
     const TYPE_ADMIN = "admin";
     const TYPE_USER = "user";
+    //endregion types
 
-
+    //region model configs
     protected $table = 'users';
 
     protected $fillable = [
@@ -46,7 +49,9 @@ class User extends Authenticatable
     protected $casts = [
         'verified_at' => 'datetime',
     ];
+    //endregion model configs
 
+    //region custom_methods
 
     /**
      * Find user to login into application through email or mobile
@@ -59,12 +64,13 @@ class User extends Authenticatable
 
         return $user;
     }
+    //endregion custom_methods
 
-
+    //region setters
     public function setMobileAttribute($value){
         $this->attributes['mobile'] = to_valid_mobile_number($value);
     }
-
+    //endregion setters
 
     //region relations
     public function channel(){
@@ -73,6 +79,10 @@ class User extends Authenticatable
 
     public function category(){
         return $this->hasMany(Category::class);
+    }
+
+    public function playlists(){
+        return $this->hasMany(Playlist::class);
     }
 
     //endregion relations

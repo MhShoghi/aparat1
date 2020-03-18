@@ -45,7 +45,7 @@ class CategoriesTableSeeder extends Seeder
 
 
             //User 1 own categories
-            'دسته بندی شخصی ۱'   => ['icon' => null, 'banner' => null, 'user_id' => 1],
+            'دسته بندی شخصی ۱'   => ['icon' => null, 'banner' => null, 'user_id' => 2],
 
         ];
         foreach ($categories as $categoryName => $options) {
