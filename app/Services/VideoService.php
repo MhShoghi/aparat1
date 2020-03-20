@@ -4,22 +4,18 @@
 namespace App\Services;
 
 
+use App\Events\UploadNewVideo;
+use App\Http\Requests\Video\ChangeStateVideoRequest;
 use App\Http\Requests\Video\CreateVideoRequest;
 use App\Http\Requests\Video\UploadVideoBannerRequest;
 use App\Http\Requests\Video\UploadVideoRequest;
 use App\Playlist;
-use App\Tag;
 use App\Video;
-use FFMpeg\FFMpeg;
-use FFMpeg\Filters\Video\CustomFilter;
-use FFMpeg\Format\Video\WMV;
-use FFMpeg\Format\Video\X264;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use Pbmedia\LaravelFFMpeg\FFMpegFacade;
-use Pbmedia\LaravelFFMpeg\Media;
 
 class VideoService extends BaseService
 {
@@ -66,25 +62,7 @@ class VideoService extends BaseService
 
         try{
 
-            /** @var Media $videoFile */
-            $uploadedVideoPath = 'tmp/'.$request->video_id;
-            $uploadedVideo = \FFM::fromDisk('videos')->open($uploadedVideoPath);
-
-            $filter = new CustomFilter("drawtext=text='http\\://Refahshahrvand.com':fontfile=".env("FFMPEG_FONT_ADDRESS") . ":
-            fontcolor=blue : fontsize=24 : box=1 : boxcolor=white@0.5 : boxborderw=5 :
-            x=10 : y=(h - text_h - 10)");
-
-
-            $format = new X264("libmp3lame");
-            $videoFile = $uploadedVideo->addFilter($filter)
-                ->export()
-                ->toDisk('videos')
-                ->inFormat($format);
-
-
-
             DB::beginTransaction();
-
 
             // Save video
             $video = Video::create([
@@ -94,10 +72,11 @@ class VideoService extends BaseService
                 'channel_category_id' => $request->channel_category,
                 'slug' => '',
                 'info' => $request->info,
-                'duration' => $uploadedVideo->getDurationInSeconds(), //Todo: get video length
+                'duration' =>0, //Todo: get video length
                 'banner' => $request->banner,
                 'enable_comments' => $request->enable_comments,
-                'publish_at' => $request->publish_at
+                'publish_at' => $request->publish_at,
+                'state' => Video::STATE_PENDING
             ]);
 
             // Generate unique slug from video id
@@ -107,15 +86,12 @@ class VideoService extends BaseService
             $video->save();
 
 
-
             // Save video file and banner
+            event(new UploadNewVideo($video, $request));
 
-            $videoFile->save(auth()->id() . '/' .$video->slug.'.mp4');
-            Storage::disk('videos')->delete($uploadedVideoPath);
             if($request->banner){
-                Storage::disk('videos')->move ('/tmp/'.$request->banner,auth()->id().'/'.$video->banner);
+                Storage::disk('videos')->move('/tmp/'.$request->banner,auth()->id().'/'.$video->banner);
             }
-
 
             // assign playlist to video
             if($request->playlist){
@@ -130,14 +106,24 @@ class VideoService extends BaseService
 
             DB::commit();
             return response($video,200);
-        }catch (\Exception $exception){
+        }
+        catch (\Exception $exception){
             Log::error($exception);
 
-            dd($exception);
+
             DB::rollBack();
             return response([
                 'message' => 'Error has occurred!'
             ],500);
         }
+    }
+
+    public static function changeVideoState(ChangeStateVideoRequest $request)
+    {
+
+        $video = $request->video;
+        $video->state = $request->state;
+        $video->save();
+        return response([$video],200);
     }
 }

@@ -64,12 +64,24 @@ class User extends Authenticatable
 
         return $user;
     }
+
+
+    public function isAdmin()
+    {
+        return $this->type === self::TYPE_ADMIN;
+    }
+
+    public function isBaseUser()
+    {
+        return $this->type === self::TYPE_USER;
+    }
     //endregion custom_methods
 
     //region setters
     public function setMobileAttribute($value){
         $this->attributes['mobile'] = to_valid_mobile_number($value);
     }
+
     //endregion setters
 
     //region relations

@@ -27,7 +27,7 @@ class Video extends Model
         'channel_category_id' ,
         'slug' , 'title' ,
         'info' , 'duration' ,
-        'banner', 'enable_comments', 'publish_at'];
+        'banner', 'enable_comments', 'publish_at', 'state'];
 
     //endregion model configs
 
@@ -43,4 +43,10 @@ class Video extends Model
 
     //endregion relations
 
+    //region model methods override
+    public function getRouteKeyName()
+    {
+        return 'slug';
+    }
+    //endregion model methods override
 }

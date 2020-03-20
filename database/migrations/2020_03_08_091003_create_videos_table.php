@@ -20,7 +20,7 @@ class CreateVideosTable extends Migration
             $table->unsignedBigInteger('category_id');
             $table->unsignedBigInteger('channel_category_id');
 
-            $table->string('slug',50);
+            $table->string('slug',50)->collation('ascii_bin');
             $table->string('title');
             $table->text('info')->nullable();
             $table->integer('duration');
@@ -61,5 +61,6 @@ class CreateVideosTable extends Migration
     public function down()
     {
         Schema::dropIfExists('vidoes');
+
     }
 }

@@ -38,7 +38,8 @@ class CreateVideoRequest extends FormRequest
             "channel_category" => ['nullable',new CategoryId(CategoryId::PRIVATE_CATEGORIES)], //TODO: Channel Category
             "banner" => ['nullable','string',new UploadedVideoBannerId()], //TODO: Banner should be uploaded before create video
             "enable_comments" => "boolean|required",
-            "publish_at" => 'nullable|date_format:Y-m-d H:i:s|after:now'
+            "publish_at" => 'nullable|date_format:Y-m-d H:i:s|after:now',
+            "enable_watermark" => "boolean"
         ];
     }
 }

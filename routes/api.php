@@ -96,6 +96,10 @@ Route::group(['middleware' => ['auth:api'], 'prefix' => '/video'] ,function ($ro
        'as' => 'video.upload.banner',
        'uses' => 'VideoController@uploadBanner'
    ]);
+   $router->put('/{video}/state', [
+       'as' => 'video.change.state',
+       'uses' => 'VideoController@changeState'
+   ]);
 
 
 });
