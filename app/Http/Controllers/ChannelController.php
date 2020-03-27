@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Channel\ChannelStatisticsRequest;
 use App\Http\Requests\Channel\UpdateChannelRequest;
-use App\Http\Requests\Channel\UploadBannerForChannelRequest;
 use App\Http\Requests\Channel\UpdateSocialsRequest;
+use App\Http\Requests\Channel\UploadBannerForChannelRequest;
 use App\Services\ChannelService;
-use Illuminate\Http\Request;
 
 class ChannelController extends Controller
 {
@@ -24,5 +24,10 @@ class ChannelController extends Controller
 
     public function updateSocials(UpdateSocialsRequest $request){
         return ChannelService::updateSocials($request);
+    }
+
+    public function statistics(ChannelStatisticsRequest $request)
+    {
+        return ChannelService::statistics($request);
     }
 }

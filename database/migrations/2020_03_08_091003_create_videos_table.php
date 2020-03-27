@@ -50,6 +50,8 @@ class CreateVideosTable extends Migration
 
 
             $table->timestamps();
+
+            $table->softDeletes();
         });
     }
 

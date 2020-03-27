@@ -3,9 +3,12 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Playlist extends Model
 {
+
+    use SoftDeletes;
     //region model configs
     protected $table = 'playlists';
 
@@ -25,5 +28,12 @@ class Playlist extends Model
     }
 
     //endregion relations
+
+    public function toArray()
+    {
+        $data = parent::toArray();
+        $data['count'] = $this->videos()->count();
+        return $data;
+    }
 
 }

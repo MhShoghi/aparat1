@@ -18,6 +18,8 @@ class CreateTagsTable extends Migration
             $table->string('title', 100);
 
             $table->timestamps();
+
+            $table->softDeletes();
         });
     }
 

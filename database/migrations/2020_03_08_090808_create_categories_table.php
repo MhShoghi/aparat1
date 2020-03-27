@@ -26,6 +26,8 @@ class CreateCategoriesTable extends Migration
                 ->onDelete('set null')
                 ->onUpdate('cascade');
             $table->timestamps();
+
+            $table->softDeletes();
         });
     }
 

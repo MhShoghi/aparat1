@@ -12,27 +12,31 @@ class UsersTableSeeder extends Seeder
     public function run()
     {
 
-        if(\App\User::count()){
+        if (\App\User::count()) {
             \App\User::truncate();
+            \App\Channel::truncate();
         }
 
         $this->createAdminUser();
 
-        $this->createUser();
+        for ($i = 1; $i < 5; $i++) {
+            $this->createUser($i);
+        }
     }
 
-    private function createUser()
+    private function createUser($num = 1)
     {
 
         $user = factory(\App\User::class)->make([
             'type' => \App\User::TYPE_USER,
-            'email' => 'user1@aparat.me',
-            'mobile' => '+989222222222',
+            'name' => 'User ' . $num,
+            'email' => 'user' . $num . '@aparat.me',
+            'mobile' => '+989' . str_repeat($num, 9),
         ]);
 
         $user->save();
 
-        $this->command->info('Create Default User');
+        $this->command->info('Create User '. $num . ' with mobile: '.$user->mobile);
 
     }
 
@@ -42,7 +46,7 @@ class UsersTableSeeder extends Seeder
             'type' => \App\User::TYPE_ADMIN,
             'name' => 'Administrator',
             'email' => 'admin@aparat.me',
-            'mobile' => '+989111111111'
+            'mobile' => '+989000000000'
         ]);
 
         $user->save();

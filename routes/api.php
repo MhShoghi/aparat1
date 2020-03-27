@@ -16,8 +16,6 @@ use Illuminate\Support\Facades\Route;
 
 
 
-
-
 /** Auth routes */
 Route::group([],function($router){
     Route::group(['namespace' => '\Laravel\Passport\Http\Controllers'],function ($router){
@@ -61,6 +59,28 @@ Route::group(['middleware' => ['auth:api']],function($router){
         'as' => 'password.change',
         'uses' => 'UserController@changePassword'
     ]);
+
+    $router->group(['prefix' => '/user'], function($router){
+        $router->match(['post', 'get'], '/{channel}/follow', [
+            'as' => 'user.follow',
+            'uses' => 'UserController@follow'
+        ]);
+
+        $router->match(['post', 'get'], '/{channel}/unfollow', [
+            'as' => 'user.unfollow',
+            'uses' => 'UserController@unfollow'
+        ]);
+
+        $router->get('/followings' , [
+            'as' => 'user.followings',
+            'uses' => 'UserController@followings'
+        ]);
+
+        $router->get('/followers', [
+            'as' => 'user.followers',
+            'uses' => 'UserController@followers'
+        ]);
+    });
 });
 
 /** Channel routes */
@@ -79,27 +99,73 @@ Route::group(['middleware' => ['auth:api'],'prefix'=>'/channel'],function ($rout
         'as' => 'channel.update.socials',
         'uses' => 'ChannelController@updateSocials'
     ]);
+
+    $router->get('/statistics' , [
+        'as' => 'channel.statistics',
+        'uses' => 'ChannelController@statistics'
+    ]);
+
+
 });
 
 /** Video routes */
-Route::group(['middleware' => ['auth:api'], 'prefix' => '/video'] ,function ($router){
-   $router->post('/upload', [
-       'as' => 'video.upload',
-       'uses' => 'VideoController@upload'
-   ]);
-   $router->post('/', [
-       'as' => 'video.create',
-       'uses' => 'VideoController@create'
-   ]);
+Route::group(['middleware' => [], 'prefix' => '/video'] ,function ($router){
 
-   $router->post('/upload-banner', [
-       'as' => 'video.upload.banner',
-       'uses' => 'VideoController@uploadBanner'
-   ]);
-   $router->put('/{video}/state', [
-       'as' => 'video.change.state',
-       'uses' => 'VideoController@changeState'
-   ]);
+    $router->match(['get','post'],'/{video}/like', [
+        'as' => 'video.like',
+        'uses' => 'VideoController@likeVideo'
+    ]);
+
+    $router->match(['get','post'],'/{video}/dislike', [
+        'as' => 'video.dislike',
+        'uses' => 'VideoController@dislikeVideo'
+    ]);
+
+    $router->get('/',[
+        'as' => 'video.list',
+        'uses' => 'VideoController@getAll'
+    ]);
+
+    $router->get('/{video}',[
+        'as' => 'video.show',
+        'uses' => 'VideoController@showVideo'
+    ]);
+
+    // Routes that only logged-in users have access to
+    Route::group(['middleware' => ['auth:api']], function ($router){
+        $router->post('/upload', [
+            'as' => 'video.upload',
+            'uses' => 'VideoController@upload'
+        ]);
+
+        $router->post('/', [
+            'as' => 'video.create',
+            'uses' => 'VideoController@create'
+        ]);
+
+        $router->post('/upload-banner', [
+            'as' => 'video.upload.banner',
+            'uses' => 'VideoController@uploadBanner'
+        ]);
+
+        $router->put('/{video}/state', [
+            'as' => 'video.change.state',
+            'uses' => 'VideoController@changeState'
+        ]);
+
+        $router->post('/{video}/republish',[
+            'as' => 'video.republish',
+            'uses' => 'VideoController@republish'
+        ]);
+
+        $router->get('/liked', [
+            'as' => 'video.liked',
+            'uses' => 'VideoController@likedByCurrentUser'
+        ]);
+
+
+
+    });
 
 
 });
@@ -144,6 +210,7 @@ Route::group(['middleware' => ['auth:api'],'prefix' => '/playlist'], function ($
         'as' => 'playlist.create',
         'uses' => 'PlaylistController@create'
     ]);
+
 });
 
 /** Tag routes */
@@ -159,6 +226,28 @@ Route::group(['middleware' => ['auth:api'], 'prefix' => '/tag'], function ($rout
     ]);
 });
 
+/** Comment routes */
+Route::group(['middleware' => ['auth:api'], 'prefix'=> '/comment'], function ($router){
+   $router->get('/',[
+       'as' => 'comment.all',
+       'uses' => 'CommentController@all'
+   ]);
+
+   $router->post('/', [
+      'as' => 'comment.create',
+      'uses' => 'CommentController@create'
+   ]);
+
+   $router->match(['post', 'put'], '/{comment}/state', [
+       'as' => 'comment.change.state',
+       'uses' => 'CommentController@changeState'
+   ]);
+
+   $router->delete('/{comment}',[
+       'as' => 'comment.delete',
+       'uses' => 'CommentController@delete'
+   ]);
+});
 
 
 //Route::middleware('auth:api')->get('/user', function (Request $request) {

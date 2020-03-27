@@ -3,10 +3,12 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Channel extends Model
 {
 
+    use SoftDeletes;
     //region model configs
     protected $table = "channels";
 
@@ -18,8 +20,18 @@ class Channel extends Model
     public function user(){
         return $this->belongsTo(User::class);
     }
+
+    public function videos()
+    {
+        return $this->user->videos();
+    }
     //endregion relations
 
+
+    public function getRouteKeyName()
+    {
+        return 'name';
+    }
     //region setters
     public function setSocialsAttribute($value){
         $value = is_array($value) ? json_encode($value) : $value;

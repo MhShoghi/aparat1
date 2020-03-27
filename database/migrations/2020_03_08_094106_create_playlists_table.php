@@ -28,6 +28,8 @@ class CreatePlaylistsTable extends Migration
 
 
             $table->timestamps();
+
+            $table->softDeletes();
         });
     }
 

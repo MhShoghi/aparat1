@@ -1,5 +1,6 @@
 <?php
 
+use App\Comment;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -19,10 +20,11 @@ class CreateCommentsTable extends Migration
 
             $table->unsignedBigInteger('user_id')->comment('UserID that send comment');
             $table->unsignedBigInteger('video_id')->comment('Video that user send comment blow it');
-            $table->unsignedBigInteger('comment_id')->nullable()->comment('Sub comment');
+            $table->unsignedBigInteger('parent_id')->nullable()->comment('Sub comment');
 
+            $table->text('body');
 
-            $table->timestamp('accepted_at')->nullable();
+            $table->enum('state', Comment::COMMENT_STATES)->default(Comment::STATE_PENDING);
 
             $table->foreign('user_id')
                 ->references('id')
@@ -36,12 +38,13 @@ class CreateCommentsTable extends Migration
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
 
-            $table->timestamps();
-            $table->foreign('comment_id')
+            $table->foreign('parent_id')
                 ->references('id')
                 ->on('comments')
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
+            $table->timestamps();
+            $table->softDeletes();
         });
     }
 

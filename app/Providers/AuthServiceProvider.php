@@ -2,7 +2,12 @@
 
 namespace App\Providers;
 
+use App\Channel;
+use App\Comment;
+use App\Policies\CommentPolicy;
+use App\Policies\UserPolicy;
 use App\Policies\VideoPolicy;
+use App\User;
 use App\Video;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
@@ -16,8 +21,9 @@ class AuthServiceProvider extends ServiceProvider
      * @var array
      */
     protected $policies = [
-        // 'App\Model' => 'App\Policies\ModelPolicy',
-        Video::class => VideoPolicy::class
+        Video::class => VideoPolicy::class,
+        User::class => UserPolicy::class,
+        Comment::class => CommentPolicy::class
     ];
 
     /**
@@ -40,11 +46,11 @@ class AuthServiceProvider extends ServiceProvider
 
     private function registerGates()
     {
-//        Gate::before(function ($user, $ability){
-//
-//            if($user->isAdmin()){
-//                return true;
-//            }
-//        });
+        Gate::before(function ($user, $ability){
+
+            if($user->isAdmin()){
+                return true;
+            }
+        });
     }
 }

@@ -17,6 +17,7 @@ class CreateVideoFavouritesTable extends Migration
             $table->bigIncrements('id');
 
             $table->unsignedBigInteger('user_id');
+            $table->string('user_ip',100);
             $table->unsignedBigInteger('video_id');
 
             $table->foreign('user_id')

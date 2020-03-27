@@ -11,6 +11,10 @@ use App\Http\Requests\Auth\ResendVerificationCodeRequest;
 use App\Http\Requests\User\ChangeEmailRequest;
 use App\Http\Requests\User\ChangeEmailSubmitRequest;
 use App\Http\Requests\User\ChangePasswordRequest;
+use App\Http\Requests\User\FollowerUserRequest;
+use App\Http\Requests\User\FollowingUserRequest;
+use App\Http\Requests\User\FollowUserRequest;
+use App\Http\Requests\User\UnfollowUserRequest;
 use App\User;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Cache;
@@ -185,6 +189,57 @@ class UserService extends BaseService
             Log::error($exception);
             return response(['message' => 'Something wrong went! (change password)'],500);
         }
+    }
+
+    public static function followChannel(FollowUserRequest $request)
+    {
+
+        try{
+
+            $user = $request->user();
+            $user->follow($request->channel->user);
+
+            return response([
+                'message' => 'Successful channel follow'
+            ],200);
+
+
+        }
+        catch (\Exception $exception){
+            Log::error($exception);
+
+            return response([
+                'message' => 'Something wrong went!'
+            ],500);
+        }
+    }
+
+    public static function unfollowChannel(UnfollowUserRequest $request)
+    {
+        try {
+            $user = $request->user();
+
+            $user->unfollow($request->channel->user);
+
+            return response(['message' => 'Successful unfollow'],200);
+        }catch (\Exception $exception){
+            Log::error($exception);
+
+            return response([
+                'message' => 'Something wrong went!'
+            ],500);
+        }
+    }
+
+    public static function followings(FollowingUserRequest $request)
+    {
+        return $request->user()->followings()->paginate();
+    }
+
+    public static function followers(FollowerUserRequest $request)
+    {
+
+        return $request->user()->followers;
     }
 }
 
